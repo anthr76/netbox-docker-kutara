@@ -19,7 +19,7 @@ jobs:
           echo ::set-output name=version::${GITHUB_REF##*/}
 
       - name: Get Upstream Tag
-        run: echo "UPSTREAM_TAG=${grep "FROM" < ./Dockerfile | sed -e "s#FROM docker.io/netboxcommunity/netbox\:##g" -e "s#-.*##g"}"
+        run: echo UPSTREAM_TAG=$(grep "FROM" < ./Dockerfile | sed -e "s#FROM docker.io/netboxcommunity/netbox\:##g" -e "s#-.*##g") >> $GITHUB_ENV
 
       - name: Build
         id: build
