@@ -1,0 +1,44 @@
+name: container-release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    strategy:
+    if: github.event_name != 'pull_request'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Prepare
+        id: prep
+        run: |
+          echo ::set-output name=version::${GITHUB_REF##*/}
+
+      - name: Get Upstream Tag
+        run: echo "UPSTREAM_TAG=${grep "FROM" < ./Dockerfile | sed -e "s#FROM docker.io/netboxcommunity/netbox\:##g" -e "s#-.*##g"}"
+
+      - name: Build
+        id: build
+        uses: redhat-actions/buildah-build@v2.8
+        with:
+         image: netbox-docker-kutara
+         tags: v${{ steps.prep.outputs.version }} ${{ env.UPSTREAM_TAG }} latest
+         oci: true
+         layers: true
+         containerfiles: ./${{ matrix.containerfile }}
+         extra-args: |
+           --squash
+        
+      - name: Push
+        uses: redhat-actions/push-to-registry@v2.3.2
+        with:
+         image: ${{ steps.build.outputs.image }}
+         tags:  ${{ steps.build.outputs.tags }}
+         registry: ghcr.io/${{ github.actor }}
+         username: ${{ github.actor }}
+         password: ${{ secrets.CR_TOKEN }}
