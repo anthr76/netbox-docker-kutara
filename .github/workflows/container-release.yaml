@@ -23,7 +23,7 @@ jobs:
 
       - name: Build
         id: build
-        uses: redhat-actions/buildah-build@v2.8
+        uses: redhat-actions/buildah-build@v2.9
         with:
          image: netbox-docker-kutara
          tags: v${{ steps.prep.outputs.version }} ${{ env.UPSTREAM_TAG }} latest
