@@ -1,2 +1,2 @@
 napalm-vyos == 0.2.1
-napalm_ros == 1.0.1
+napalm_ros ==1.2.6
